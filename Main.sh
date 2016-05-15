@@ -23,3 +23,7 @@
 #
 # v0.1 2016-05-14
 #	- Foi criado o arquivo que baixa as cotações e coloca no SQL
+#
+# v0.2 2016-05-15
+#	- Foi feito a geração de gráficos
+#	- Foi feita o arquivo que cria o site
