@@ -20,3 +20,6 @@
 #
 #	- Foi feito a primeira versão do cabeçalho.
 #	- Foi criada a conta do GitHub
+#
+# v0.1 2016-05-14
+#	- Foi criado o arquivo que baixa as cotações e coloca no SQL

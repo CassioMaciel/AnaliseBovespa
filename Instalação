@@ -1,0 +1,44 @@
+Notação: #  -> indica terminal como super-usuario. Para isso, digite "su " ou sudo <comando>
+	 $  -> indica um terminal de usuario comum.
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+INSTALANDO SQL SERVER
+
+# apt-get install -y mysql-server 
+
+caso seja pedido, defina a palavra chave do utilizador root, caso não seja, defina conforme segue
+
+# mysqladmin -u root -p password <Password que você escolher>
+
+$ mysql -u root -p
+
+digite a senha que você escolheu, agora estamos dentro do prompt do mysql. Vamos criar um usuario que irá utilizar o my SQL.
+
+mysql> GRANT usage ON bovespa.* TO AnaliseBovespa@localhost IDENTIFIED BY '1234';
+
+caso o programa esteja em uma maquina diferente do servidor mysql, deve-se utilizar o comando 
+
+mysql> GRANT usage ON bovespa.* TO AnaliseBovespa@'%' IDENTIFIED BY '1234';
+
+como minha senha é muito fraca (1234), não fiz essa opção.
+
+onde 1234 é a senha que você escolheu. Caso utilize outra, deve-se mudar no programa a senha. Ainda não fiz essa mudança de uma maneira facil, mas será implementada.
+
+Não foi utilizada uma senha mais forte pois considero que mesmo se alguem tiver acesso ao banco de dados e exclui-lo, posso refaze-lo rapidamente.
+
+mysql> GRANT CREATE, DROP, SELECT, INSERT, UPDATE, DELETE ON bovespa.* TO AnaliseBovespa@localhost;
+
+mysql> flush privileges;
+
+mysql> quit;
+
+configuração terminada
+
+mais detalhes em "http://thobias.org/doc/shell_bd.html"
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
