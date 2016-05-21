@@ -25,7 +25,7 @@ echo -e "\
 <body> \n \
 <a href=\"./Favoritos.html\">Favoritos</a><br>" > /var/www/html/index.html
 
-for acao in $(mysql -u 'AnaliseBovespa' -p'1234' -e "SELECT DISTINCT CodigoNegociacao FROM bovespa.cotacao_hist GROUP BY CodigoNegociacao HAVING MIN(TotalNegocios)>10 ;" | tail -n +2)
+for acao in $(mysql -u 'AnaliseBovespa' -p'1234' -e "SELECT DISTINCT CodigoNegociacao FROM bovespa.cotacao_hist GROUP BY CodigoNegociacao HAVING MIN(TotalNegocios)>10 ;" | tail -n +2) #Order by Volume ( porque do Group ? )
 do
 
 	echo -e "<img src=\"/GrafBolsa/$acao.png\"><br>" >> /var/www/html/index.html
