@@ -27,3 +27,9 @@
 # v0.2 2016-05-15
 #	- Foi feito a geração de gráficos
 #	- Foi feita o arquivo que cria o site
+#
+# v0.3 2016-05-21
+#	- Foi melhorado o aspecto beleza dos graficos
+#	- Foram colocadas a opção de baixar arquivo diário para o usuario
+#	- Foram colocadas opções do tipo --foo no DowCot.Sh
+#	- Está começando a se parecer um programa. Acho que podemos chamar de versão Alpha !!! \o/

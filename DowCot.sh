@@ -19,6 +19,13 @@
 #
 #	- Feito a primeira versão do programa.
 #
+# v0.3 2016-05-21
+#
+#	- Foram colocadas a opção de baixar arquivo diário para o usuario
+#	- Foram colocadas opções do tipo --foo no DowCot.Sh
+#	- Está começando a se parecer um programa. Acho que podemos chamar de versão Alpha !!! \o/
+#
+#
 #--------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Layout do arquivo de cotações
@@ -31,7 +38,7 @@ trap "rm /tmp/$$_* ; exit" 0 1 2 3 15
 #-------------------------------------------------------------------------------------------------------------------------------------------------
 # FLAGS
 
-Remove_Dados_Antigos=1 # 0 para não remover, 1 para remover dados antigos
+Remove_Dados_Antigos=0 # 0 para não remover, 1 para remover dados antigos
 Baixa_Dados_Historicos=1 #0 para não baixar dados historicos, 1 para baixar (Ou baixa históricos, ou baixa diário)
 Baixa_Dados_Diarios=0 #0 para não baixar dados diarios, 1 para baixar
 Ano=`date +"%Y"`
@@ -43,6 +50,11 @@ Dia=`date +"%m%d"`
 while test -n "$1"
 do
 	case "$1" in
+
+	--datas )
+		mysql -u 'AnaliseBovespa' -p'1234' -e "SELECT DISTINCT data FROM bovespa.cotacao_hist  Order by data ASC ;"
+		exit 0
+	;;
 
 	-d | --diario )
 		Baixa_Dados_Diarios=1

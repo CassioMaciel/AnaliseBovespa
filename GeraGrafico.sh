@@ -20,27 +20,27 @@
 #
 #--------------------------------------------------------------------------------------------------------------------------------------------------
 
-trap "rm /tmp/$$_* ; exit" 0 1 2 3 15
+trap "rm /tmp/$$_* 2> /dev/null ; exit" 0 1 2 3 15
 
-rm /var/www/html/GrafBolsa/*
+rm /var/www/html/GrafBolsa/* 2> /dev/null
 
-for acao in $(mysql -u 'AnaliseBovespa' -p'1234' -e "SELECT DISTINCT CodigoNegociacao FROM bovespa.cotacao_hist GROUP BY CodigoNegociacao HAVING MIN(TotalNegocios)>10 ;" | tail -n +2)
+for acao in $(mysql -u 'AnaliseBovespa' -p'1234' -e "SELECT DISTINCT CodigoNegociacao FROM bovespa.cotacao_hist GROUP BY CodigoNegociacao HAVING MIN(TotalNegocios)>30 ;" | tail -n +2)
 do
 
-	mysql -u 'AnaliseBovespa' -p'1234' -e "SELECT DISTINCT data,Abertura,Minimo,Maximo,Fechamento FROM bovespa.cotacao_hist where CodigoNegociacao = '$acao' AND data > '`date +'%Y-%m-%d' -d"-90 days"`' ;" > /tmp/$$_Dados_Para_Candle
+	mysql -u 'AnaliseBovespa' -p'1234' -e "SELECT DISTINCT data,Abertura,Minimo,Maximo,Fechamento FROM bovespa.cotacao_hist where CodigoNegociacao = '$acao' AND data > '`date +'%Y-%m-%d' -d"-180 days"`' ;" > /tmp/$$_Dados_Para_Candle
 
+Media_Movel.sh "/tmp/$$_Dados_Para_Candle"
 
-
-#mysql -u 'AnaliseBovespa' -p'1234' -e "SELECT DISTINCT data,Abertura,Minimo,Maximo,Fechamento FROM bovespa.cotacao_hist where CodigoNegociacao = 'PETR4' and data > '2016-05-01' ;"
-
-gnuplot -e "\
-set terminal pngcairo size 700,500 enhanced font 'Verdana,10' ;\
-set output '/var/www/html/GrafBolsa/$acao.png' ;\
-set timefmt \"%Y-%m-%d\" ;\
-set title \"$acao\" ;\
-set xdata time ;\
-set format x \"\" ;\
-set xrange [ * : * ] ;\
-plot '/tmp/$$_Dados_Para_Candle' using 1:2:3:4:5 t '' with candlesticks"
+gnuplot -e  "\
+set terminal pngcairo size 700,500 enhanced font 'Verdana,10' ; \
+set output '/var/www/html/GrafBolsa/$acao.png' ; \
+set timefmt \"%Y-%m-%d\" ; \
+set title \"$acao\" ; \
+set xdata time ; \
+set format x \"\" ; \
+set xrange [ '`date +'%Y-%m-%d' -d"-90 days"`' : * ] ; \
+plot '/tmp/$$_Dados_Para_Candle' using 1:2:3:4:5 t ''     with candlesticks , \
+     '/tmp/$$_Dados_Para_Candle' using 1:6       t 'MM9'  with lines, \
+     '/tmp/$$_Dados_Para_Candle' using 1:7       t 'MM21' with lines"
 
 done
