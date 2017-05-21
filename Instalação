@@ -37,8 +37,11 @@ mysql> quit;
 configuração terminada
 
 mais detalhes em "http://thobias.org/doc/shell_bd.html"
+                 "https://elias.praciano.com/2015/03/como-executar-queries-mysql-de-uma-shell-script/"
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-#apt-get install gedit
+# apt-get install -y apache2
+# mkdir /var/www/html/GrafBolsa
+
 

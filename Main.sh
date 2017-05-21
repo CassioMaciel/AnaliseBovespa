@@ -33,3 +33,59 @@
 #	- Foram colocadas a opção de baixar arquivo diário para o usuario
 #	- Foram colocadas opções do tipo --foo no DowCot.Sh
 #	- Está começando a se parecer um programa. Acho que podemos chamar de versão Alpha !!! \o/
+#
+# v0.7 2017-05-17
+#	-Foi feito com que o programa Main controle os ativos que vão no Html e no GeraGrafico, de maneira que eles sempre sejam iguais
+#	-Add. Script que garante que os ativos com graficos tenham tido negociação todos os dias
+#	-Fazendo na sequencia da força relativa
+#
+####################################################################################################
+
+trap "rm /tmp/$$_* 2> /dev/null ; rm /tmp/MM* ;  exit" 0 1 2 3 15
+
+Query="SELECT DISTINCT CodigoNegociacao FROM bovespa.cotacao_hist WHERE
+
+CodigoNegociacao IN ( 
+  SELECT CodigoNegociacao
+  FROM bovespa.cotacao_hist
+  GROUP by CodigoNegociacao 
+  having count(*) = (
+    SELECT COUNT(*) 
+    FROM bovespa.cotacao_hist
+    WHERE CodigoNegociacao = 'PETR4'
+    GROUP by CodigoNegociacao
+    )
+  ) 
+
+AND
+
+CodigoNegociacao IN ( 
+  SELECT 
+  CodigoNegociacao 
+  from bovespa.cotacao_hist WHERE data=(select MAX(data) from bovespa.cotacao_hist) AND fechamento<10
+  )
+;"
+
+acoes=$( mysql -B -u 'AnaliseBovespa' -p'1234' -B -e "$Query" | tail -n +2 )
+
+./ForcaRelativa.sh $acoes
+
+Query="SELECT CodigoNegociacao from bovespa.ForRel order by variacao Desc;"
+
+mysql -u 'AnaliseBovespa' -p'1234' -B -e "SELECT CodigoNegociacao,variacao from bovespa.ForRel order by variacao Desc; " | tail -n +2 
+
+acoes=$( mysql -B -u 'AnaliseBovespa' -p'1234' -B -e "$Query" | tail -n +2 )
+
+./GeraHtml.sh $acoes
+
+./GeraGrafico.sh $acoes
+
+
+
+
+
+
+
+
+
+

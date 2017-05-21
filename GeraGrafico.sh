@@ -24,23 +24,54 @@ trap "rm /tmp/$$_* 2> /dev/null ; exit" 0 1 2 3 15
 
 rm /var/www/html/GrafBolsa/* 2> /dev/null
 
-for acao in $(mysql -u 'AnaliseBovespa' -p'1234' -e "SELECT DISTINCT CodigoNegociacao FROM bovespa.cotacao_hist GROUP BY CodigoNegociacao HAVING MIN(TotalNegocios)>30 ;" | tail -n +2)
+for acao in $*
 do
 
-	mysql -u 'AnaliseBovespa' -p'1234' -e "SELECT DISTINCT data,Abertura,Minimo,Maximo,Fechamento FROM bovespa.cotacao_hist where CodigoNegociacao = '$acao' AND data > '`date +'%Y-%m-%d' -d"-180 days"`' ;" > /tmp/$$_Dados_Para_Candle
+### CONFIGURAÇÕES GLOBAIS DO GNUPLOT ###
 
-Media_Movel.sh "/tmp/$$_Dados_Para_Candle"
-
-gnuplot -e  "\
+echo "\
 set terminal pngcairo size 700,500 enhanced font 'Verdana,10' ; \
 set output '/var/www/html/GrafBolsa/$acao.png' ; \
 set timefmt \"%Y-%m-%d\" ; \
 set title \"$acao\" ; \
 set xdata time ; \
 set format x \"\" ; \
-set xrange [ '`date +'%Y-%m-%d' -d"-90 days"`' : * ] ; \
-plot '/tmp/$$_Dados_Para_Candle' using 1:2:3:4:5 t ''     with candlesticks , \
-     '/tmp/$$_Dados_Para_Candle' using 1:6       t 'MM9'  with lines, \
-     '/tmp/$$_Dados_Para_Candle' using 1:7       t 'MM21' with lines"
+set style fill solid ; \
+set grid; \
+set xrange [ * : * ]" > /tmp/$$_Entrada_Gnuplot
+#set xrange [ '`date +'%Y-%m-%d' -d"-390 days"`' : * ]" > /tmp/$$_Entrada_Gnuplot
+
+### PLOT DO CANDLESTICK ####
+
+#Candles Verdes
+
+mysql -u 'AnaliseBovespa' -p'1234' -e "SELECT DISTINCT data,Abertura,Minimo,Maximo,Fechamento FROM bovespa.cotacao_hist where CodigoNegociacao = '$acao' AND data > '`date +'%Y-%m-%d' -d"-180 days"`' AND ABERTURA < FECHAMENTO ;" > /tmp/$$_Dados_Para_Candle_Subiu
+
+echo "plot '/tmp/$$_Dados_Para_Candle_Subiu' using 1:2:3:4:5 t '' with candlesticks linecolor 'green', \\" >> /tmp/$$_Entrada_Gnuplot
+
+#Candles vermelhos
+
+mysql -u 'AnaliseBovespa' -p'1234' -e "SELECT DISTINCT data,Abertura,Minimo,Maximo,Fechamento FROM bovespa.cotacao_hist where CodigoNegociacao = '$acao' AND data > '`date +'%Y-%m-%d' -d"-180 days"`' AND ABERTURA > FECHAMENTO ;" > /tmp/$$_Dados_Para_Candle_Desceu
+
+echo "'/tmp/$$_Dados_Para_Candle_Desceu' using 1:2:3:4:5 t '' with candlesticks linecolor 'red', \\" >> /tmp/$$_Entrada_Gnuplot
+
+### FAZENDO O PLOT DOS INDICADORES ###
+
+mysql -u 'AnaliseBovespa' -p'1234' -e "SELECT DISTINCT data,Fechamento FROM bovespa.cotacao_hist where CodigoNegociacao = '$acao' AND data > '`date +'%Y-%m-%d' -d"-220 days"`'" > /tmp/Dados_Fechamento
+
+#Media Movel
+
+Periodos="17 34"
+
+Media_Movel.sh $Periodos
+
+for i in $Periodos
+do
+echo "'/tmp/MM$i' using 1:2 t 'MMA$i' with lines, \\" >> /tmp/$$_Entrada_Gnuplot
+done
+
+### Plotando o grafico ###
+
+gnuplot < /tmp/$$_Entrada_Gnuplot 2> /dev/null
 
 done

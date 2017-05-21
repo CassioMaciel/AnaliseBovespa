@@ -25,11 +25,7 @@ echo -e "\
 <body> \n \
 <a href=\"./Favoritos.html\">Favoritos</a><br>" > /var/www/html/index.html
 
-#for acao in $(mysql -u 'AnaliseBovespa' -p'1234' -e "SELECT DISTINCT CodigoNegociacao FROM bovespa.cotacao_hist GROUP BY CodigoNegociacao HAVING MIN(TotalNegocios)>10 ;" | tail -n +2) #Order by Volume ( porque do Group ? )
-
-#for acao in $(mysql -u 'AnaliseBovespa' -p'1234' -e "SELECT DISTINCT CodigoNegociacao FROM bovespa.cotacao_hist GROUP BY CodigoNegociacao HAVING MIN(TotalNegocios)>30 Order by Volume DESC ;" | tail -n +2) #Order by Volume ( porque do Group ? )
-#for acao in $(mysql -u 'AnaliseBovespa' -p'1234' -e "SELECT DISTINCT CodigoNegociacao FROM bovespa.cotacao_hist GROUP BY CodigoNegociacao HAVING MIN(TotalNegocios)>30 AND MAX(Fechamento)<10 Order by Volume DESC ;" | tail -n +2) #Order by Volume ( porque do Group ? )
-for acao in $(mysql -u 'AnaliseBovespa' -p'1234' -e "SELECT CodigoNegociacao,Fechamento,data from bovespa.cotacao_hist WHERE data=(select MAX(data) from bovespa.cotacao_hist) GROUP BY CodigoNegociacao HAVING MIN(TotalNegocios)>30 AND Fechamento<10 Order by Volume DESC ;" | tail -n +2)
+for acao in $*
 do
 
 	echo -e "<img src=\"/GrafBolsa/$acao.png\"><br>" >> /var/www/html/index.html

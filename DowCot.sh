@@ -68,8 +68,8 @@ do
 	;;
 	
 	-h | --historico )
-		Baixa_Dados_Diarios=1
-		Baixa_Dados_Historicos=0
+		Baixa_Dados_Diarios=0
+		Baixa_Dados_Historicos=1
 		Remove_Dados_Antigos=0			
 		shift
 		Ano="$1"
