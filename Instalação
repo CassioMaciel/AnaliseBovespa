@@ -43,5 +43,17 @@ mais detalhes em "http://thobias.org/doc/shell_bd.html"
 
 # apt-get install -y apache2
 # mkdir /var/www/html/GrafBolsa
+# chmod 777 /var/www/html     ### Uma opção menos restritiva é colocar o usuario no grupo dos que podem escrever
+# chmod 777 /var/www/html/index.html
+# chmod 777 /var/www/html/GrafBolsa/
 
+# apt-get install -y lynx
 
+# apt-get install gnuplot
+
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+entrar no arquivo ~/.bashrc e escrever:
+PATH=$PATH:/home/cassio/Programas/popcorntime/linux32:/home/cassio/Programas/AnaliseBovespa
+
+---------------------------------------------------------------------------------------------------------------------------------------------------

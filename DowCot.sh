@@ -76,6 +76,8 @@ do
 	;;
 	--remove )
 		Remove_Dados_Antigos=1
+		Baixa_Dados_Diarios=0
+		Baixa_Dados_Historicos=0
 	;;
 	esac
 shift
@@ -235,4 +237,6 @@ PRIMARY KEY (CodigoNegociacao, data)
 
 fi
 
-mysql -u 'AnaliseBovespa' -p'1234' < /tmp/$$_Entrada_SQL
+ grep -v \'\' /tmp/$$_Entrada_SQL | grep -v '>' > /tmp/$$_EntradaFiltradaSQL
+
+mysql -u 'AnaliseBovespa' -p'1234' < /tmp/$$_EntradaFiltradaSQL

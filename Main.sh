@@ -70,22 +70,14 @@ acoes=$( mysql -B -u 'AnaliseBovespa' -p'1234' -B -e "$Query" | tail -n +2 )
 
 ./ForcaRelativa.sh $acoes
 
-Query="SELECT CodigoNegociacao from bovespa.ForRel order by variacao Desc;"
+Periodo="\`1 Mes\`"
 
-mysql -u 'AnaliseBovespa' -p'1234' -B -e "SELECT CodigoNegociacao,variacao from bovespa.ForRel order by variacao Desc; " | tail -n +2 
+Query="SELECT CodigoNegociacao from bovespa.ForRel order by $Periodo Desc;"
+
+mysql -u 'AnaliseBovespa' -p'1234' -e "SELECT CodigoNegociacao,$Periodo from bovespa.ForRel order by $Periodo Desc; "
 
 acoes=$( mysql -B -u 'AnaliseBovespa' -p'1234' -B -e "$Query" | tail -n +2 )
 
 ./GeraHtml.sh $acoes
 
 ./GeraGrafico.sh $acoes
-
-
-
-
-
-
-
-
-
-
